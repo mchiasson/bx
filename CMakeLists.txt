@@ -6,12 +6,28 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 project(bx VERSION 1.0.0)
 
-file(GLOB BX_INCLUDES include/*.*)
-file(GLOB BX_SOURCES src/*.*)
-
 add_library(bx
-    ${BX_INCLUDES}
-    ${BX_SOURCES}
+    src/allocator.cpp
+    src/bx.cpp
+    src/commandline.cpp
+    src/crtnone.cpp
+    src/debug.cpp
+    src/dtoa.cpp
+    src/easing.cpp
+    src/file.cpp
+    src/filepath.cpp
+    src/hash.cpp
+    src/math.cpp
+    src/mutex.cpp
+    src/os.cpp
+    src/process.cpp
+    src/semaphore.cpp
+    src/settings.cpp
+    src/sort.cpp
+    src/string.cpp
+    src/thread.cpp
+    src/timer.cpp
+    src/url.cpp
 )
 
 target_include_directories(bx
