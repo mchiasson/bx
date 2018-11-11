@@ -6,36 +6,77 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 project(bx VERSION 1.0.0)
 
-add_library(bx
-    src/allocator.cpp
-    src/bx.cpp
-    src/commandline.cpp
-    src/crtnone.cpp
-    src/debug.cpp
-    src/dtoa.cpp
-    src/easing.cpp
-    src/file.cpp
-    src/filepath.cpp
-    src/hash.cpp
-    src/math.cpp
-    src/mutex.cpp
-    src/os.cpp
-    src/process.cpp
-    src/semaphore.cpp
-    src/settings.cpp
-    src/sort.cpp
-    src/string.cpp
-    src/thread.cpp
-    src/timer.cpp
-    src/url.cpp
+option(BX_AMALGAMATED "Use the amalgamated source file" ON)
+
+# Grab the bx source files
+file(GLOB BX_SOURCES src/*.cpp)
+
+if(BX_AMALGAMATED)
+    set(BX_NOBUILD ${BX_SOURCES})
+    list(REMOVE_ITEM BX_NOBUILD src/amalgamated.cpp)
+    foreach(BX_SRC ${BX_NOBUILD})
+        set_source_files_properties(${BX_SRC} PROPERTIES HEADER_FILE_ONLY ON)
+    endforeach()
+else()
+    set_source_files_properties(src/amalgamated.cpp PROPERTIES HEADER_FILE_ONLY ON)
+endif()
+
+add_library(bx ${BX_SOURCES})
+
+if(MSVC)
+    target_include_directories(bx
+        PUBLIC
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/compat/msvc>
+            $<INSTALL_INTERFACE:include>
+            $<INSTALL_INTERFACE:include/compat/msvc>
+        PRIVATE 3rdparty
+    )
+elseif(MINGW)
+    target_include_directories(bx
+        PUBLIC
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/compat/mingw>
+            $<INSTALL_INTERFACE:include>
+            $<INSTALL_INTERFACE:include/compat/mingw>
+        PRIVATE 3rdparty
+    )
+elseif(APPLE)
+    target_include_directories(bx
+        PUBLIC
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/compat/osx>
+            $<INSTALL_INTERFACE:include>
+            $<INSTALL_INTERFACE:include/compat/osx>
+        PRIVATE 3rdparty
+    )
+else()
+    target_include_directories(bx
+        PUBLIC
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+            $<INSTALL_INTERFACE:include>
+        PRIVATE 3rdparty
+    )
+endif()
+
+target_compile_definitions(bx
+    PUBLIC
+        __STDC_LIMIT_MACROS
+        __STDC_FORMAT_MACROS
+        __STDC_CONSTANT_MACROS
+        $<$<CONFIG:Debug>:BX_CONFIG_DEBUG=1>
+        $<$<CONFIG:Release>:BX_CONFIG_DEBUG=0>
 )
 
-target_include_directories(bx
-    PUBLIC
-        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    PRIVATE 3rdparty
-)
+if(MSVC OR MINGW)
+    target_link_libraries(bx PUBLIC psapi)
+elseif(APPLE)
+    find_library(FOUNDATION_LIBRARY Foundation)
+    target_link_libraries(bx PUBLIC ${FOUNDATION_LIBRARY})
+elseif(UNIX)
+    find_package(Threads)
+    target_link_libraries(bx PUBLIC ${CMAKE_THREAD_LIBS_INIT} dl rt)
+endif()
 
 set(targets_export_name "bxTargets")
 set(ConfigPackageLocation lib/cmake/bx)
