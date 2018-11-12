@@ -6,20 +6,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 project(bx VERSION 1.0.0)
 
-option(BX_AMALGAMATED "Use the amalgamated source file" ON)
-
 # Grab the bx source files
 file(GLOB BX_SOURCES src/*.cpp)
-
-if(BX_AMALGAMATED)
-    set(BX_NOBUILD ${BX_SOURCES})
-    list(REMOVE_ITEM BX_NOBUILD src/amalgamated.cpp)
-    foreach(BX_SRC ${BX_NOBUILD})
-        set_source_files_properties(${BX_SRC} PROPERTIES HEADER_FILE_ONLY ON)
-    endforeach()
-else()
-    set_source_files_properties(src/amalgamated.cpp PROPERTIES HEADER_FILE_ONLY ON)
-endif()
+set_source_files_properties(${PROJECT_SOURCE_DIR}/src/amalgamated.cpp PROPERTIES HEADER_FILE_ONLY ON)
 
 add_library(bx ${BX_SOURCES})
 
