@@ -1,14 +1,29 @@
 cmake_minimum_required(VERSION 3.2)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 project(bx VERSION 1.0.0)
 
+if(CMAKE_BUILD_TYPE MATCHES "Debug" OR CMAKE_BUILD_TYPE MATCHES "RelWithDebInfo")
+    option(BX_AMALGAMATED "Use amalgamated.cpp" FALSE)
+else()
+    option(BX_AMALGAMATED "Use amalgamated.cpp" TRUE)
+endif()
+
 # Grab the bx source files
 file(GLOB BX_SOURCES src/*.cpp)
-set_source_files_properties(${PROJECT_SOURCE_DIR}/src/amalgamated.cpp PROPERTIES HEADER_FILE_ONLY ON)
+
+if(BX_AMALGAMATED)
+    set(BX_NOBUILD ${BX_SOURCES})
+    list(REMOVE_ITEM BX_NOBUILD ${PROJECT_SOURCE_DIR}/src/amalgamated.cpp)
+    foreach(BX_SRC ${BX_NOBUILD})
+        set_source_files_properties(${BX_SRC} PROPERTIES HEADER_FILE_ONLY ON)
+    endforeach()
+else()
+    set_source_files_properties(${PROJECT_SOURCE_DIR}/src/amalgamated.cpp PROPERTIES HEADER_FILE_ONLY ON)
+endif()
 
 add_library(bx ${BX_SOURCES})
 
@@ -54,7 +69,6 @@ target_compile_definitions(bx
         __STDC_FORMAT_MACROS
         __STDC_CONSTANT_MACROS
         $<$<CONFIG:Debug>:BX_CONFIG_DEBUG=1>
-        $<$<CONFIG:Release>:BX_CONFIG_DEBUG=0>
 )
 
 if(MSVC OR MINGW)
