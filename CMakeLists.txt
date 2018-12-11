@@ -81,6 +81,8 @@ elseif(UNIX)
     target_link_libraries(bx PUBLIC ${CMAKE_THREAD_LIBS_INIT} dl rt)
 endif()
 
+set_target_properties( bx PROPERTIES FOLDER "bkaradzic" )
+
 set(targets_export_name "bxTargets")
 set(ConfigPackageLocation lib/cmake/bx)
 
@@ -124,7 +126,7 @@ install(
     EXPORT
         ${targets_export_name}
     NAMESPACE
-        "bx::"
+        "bkaradzic::"
     DESTINATION
         ${ConfigPackageLocation}
 )
