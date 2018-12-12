@@ -31,7 +31,7 @@ if(MSVC)
     target_include_directories(bx
         PUBLIC
             $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/compat/msvc>
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/compat/msvc>
             $<INSTALL_INTERFACE:include>
             $<INSTALL_INTERFACE:include/compat/msvc>
         PRIVATE 3rdparty
@@ -40,7 +40,7 @@ elseif(MINGW)
     target_include_directories(bx
         PUBLIC
             $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/compat/mingw>
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/compat/mingw>
             $<INSTALL_INTERFACE:include>
             $<INSTALL_INTERFACE:include/compat/mingw>
         PRIVATE 3rdparty
@@ -49,7 +49,7 @@ elseif(APPLE)
     target_include_directories(bx
         PUBLIC
             $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/compat/osx>
+            $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/compat/osx>
             $<INSTALL_INTERFACE:include>
             $<INSTALL_INTERFACE:include/compat/osx>
         PRIVATE 3rdparty
